@@ -40,16 +40,16 @@ cs35l41-hda i2c-CSC3551:00-cs35l41-hda.1: Cirrus Logic CS35L41 (35a40), Revision
 ```
 
 ## The general approach
-What both `setup_snd-hda-scodec-cs35l41` and `setup_snd-hda-intel` do is that they generate a configuration for a DKMS module, build it and install it. In the build process, the following happens:
+What both `setup_snd-hda-scodec-cs35l41` and `snd-hda-codec-realtek` do is that they generate a configuration for a DKMS module, build it and install it. In the build process, the following happens:
 1. The entire kernel source code for the currently installed kernel gets downloaded from https://mirrors.edge.kernel.org as a tarball.
-2. Only the module in question is extracted from the tarball. That is, snd-hda-scodec-cs35l41 and snd-hda-intel, respectively.
+2. Only the module in question is extracted from the tarball. That is, snd-hda-scodec-cs35l41 and snd-hda-codec-realtek, respectively.
 3. A patch is applied to the relevant source code files.
-4. The patched kernel module is built via make and gcc.
+4. The patched kernel module is built via `make` and `gcc`.
 
 Step 3. is where you can add your own patches to support your laptop model.
 Once the modules are built and installed via DKMS they should supersede the modules of the same name in the mainline kernel. This should also work with Secure Boot as the DKMS build process signs the modules with the MOK key on your system. Of course, as a prerequisite, this MOK key must be registered in the BIOS/UEFI of your machine beforehand.
 
 
-## The snd-hda-intel module
+## The snd-hda-codec-realtek module
 A patch for the following source code file is also needed but it's still work in progress.
 Mainline source code: https://github.com/torvalds/linux/blob/master/sound/pci/hda/patch_realtek.c

@@ -13,14 +13,14 @@ sudo mv "/usr/src/linux-headers-$(uname -r)/vmlinux" "/usr/src/linux-headers-$(u
 
 # set up the actual DKMS module -------------------------------------------------------------------
 
-sudo mkdir /usr/src/snd-hda-scodec-cs35l41-0.1
+sudo mkdir /usr/src/snd-hda-codec-realtek-0.1
 
 # create the configuration file for the DKMS module
-sudo tee /usr/src/snd-hda-scodec-cs35l41-0.1/dkms.conf <<'EOF'
-PACKAGE_NAME="snd-hda-scodec-cs35l41"
+sudo tee /usr/src/snd-hda-codec-realtek-0.1/dkms.conf <<'EOF'
+PACKAGE_NAME="snd-hda-codec-realtek"
 PACKAGE_VERSION="0.1"
 
-BUILT_MODULE_NAME[0]="snd-hda-scodec-cs35l41"
+BUILT_MODULE_NAME[0]="snd-hda-codec-realtek"
 DEST_MODULE_LOCATION[0]="/updates/dkms"
 
 AUTOINSTALL="yes"
@@ -31,7 +31,7 @@ PRE_BUILD="dkms-patchmodule.sh sound/pci/hda"
 EOF
 
 # create the pre-build script within the DKMS module
-sudo tee /usr/src/snd-hda-scodec-cs35l41-0.1/dkms-patchmodule.sh <<'EOF'
+sudo tee /usr/src/snd-hda-codec-realtek-0.1/dkms-patchmodule.sh <<'EOF'
 #!/bin/bash
 
 # see https://www.collabora.com/news-and-blog/blog/2021/05/05/quick-hack-patching-kernel-module-using-dkms/
@@ -64,27 +64,10 @@ done
 EOF
 
 # make the pre-build script executable
-sudo chmod u+x /usr/src/snd-hda-scodec-cs35l41-0.1/dkms-patchmodule.sh
+sudo chmod u+x /usr/src/snd-hda-codec-realtek-0.1/dkms-patchmodule.sh
 
-# create the patch file to apply to the source of the snd-hda-scodec-cs35l41 kernel module
-sudo tee /usr/src/snd-hda-scodec-cs35l41-0.1/cs35l41_hda.patch <<'EOF'
---- sound/pci/hda/cs35l41_hda.c
-+++ sound/pci/hda/cs35l41_hda.c
-@@ -1235,6 +1235,10 @@
- 		hw_cfg->bst_type = CS35L41_EXT_BOOST;
- 		hw_cfg->gpio1.func = CS35l41_VSPK_SWITCH;
- 		hw_cfg->gpio1.valid = true;
-+  } else if (strncmp(hid, "CSC3551", 7) == 0) {
-+     hw_cfg->bst_type = CS35L41_EXT_BOOST;
-+     hw_cfg->gpio1.func = CS35l41_VSPK_SWITCH;
-+     hw_cfg->gpio1.valid = true;
- 	} else {
- 		/*
- 		 * Note: CLSA010(0/1) are special cases which use a slightly different design.
-EOF
-
-# create the patch file to apply to the source of the snd-hda-intel kernel module
-sudo tee /usr/src/snd-hda-intel-0.1/patch_realtek.patch <<'EOF'
+# create the patch file to apply to the source of the snd-hda-codec-realtek kernel module
+sudo tee /usr/src/snd-hda-codec-realtek-0.1/patch_realtek.patch <<'EOF'
 --- sound/pci/hda/patch_realtek.c.orig
 +++ sound/pci/hda/patch_realtek.c
 @@ -9452,12 +9452,13 @@
@@ -107,8 +90,8 @@ EOF
 
 clear
 # build the DKMS module, install it and update the initramfs
-sudo dkms build -m snd-hda-scodec-cs35l41 -v 0.1 --force
-sudo dkms install -m snd-hda-scodec-cs35l41 -v 0.1 --force && \
+sudo dkms build -m snd-hda-codec-realtek -v 0.1 --force && \
+sudo dkms install -m snd-hda-codec-realtek -v 0.1 --force && \
 sudo update-initramfs -u -k $(uname -r)
 
 sudo reboot
