@@ -2,6 +2,9 @@
 
 # see https://www.collabora.com/news-and-blog/blog/2021/05/05/quick-hack-patching-kernel-module-using-dkms/
 
+# make the script stop on error
+set -e
+
 if ! which apt >/dev/null; then
   printf '%s\n\n' 'Warning! This script was created for Debian-based distros. You might want to modify it to suit your Linux distro.'
 fi
@@ -19,6 +22,18 @@ sudo mv "/usr/src/linux-headers-$(uname -r)/vmlinux" "/usr/src/linux-headers-$(u
 
 sudo mkdir /usr/src/snd-hda-scodec-cs35l41-0.1
 
+# determine the installed gcc major version
+GCC_VERSION_DEFAULT=$( gcc --version | perl -ne 'if (m~^gcc\b.+?(1\d)\.\d{,2}\.\d{,2}~) { print $1; }' )
+if [[ $GCC_VERSION_DEFAULT -lt 12 ]]; then
+  if ! which gcc-12 >/dev/null; then
+    printf '%s\n%s\n' "Your system uses version $GCC_VERSION_DEFAULT of gcc by default, but version 12 is required as a minimum." 'You might want to install it e.g. by sudo apt install gcc-12.'
+    exit 3
+  else
+    # explicitly use gcc-12 (if we use a kernel compiled with gcc-12)
+    CC_PARAMETER=" CC=$( which gcc-12 )"
+  fi
+fi
+
 # create the configuration file for the DKMS module
 sudo tee /usr/src/snd-hda-scodec-cs35l41-0.1/dkms.conf <<'EOF'
 PACKAGE_NAME="snd-hda-scodec-cs35l41"
@@ -28,9 +43,7 @@ BUILT_MODULE_NAME[0]="snd-hda-scodec-cs35l41"
 DEST_MODULE_LOCATION[0]="/updates/dkms"
 
 AUTOINSTALL="yes"
-# explicitly use gcc-12 (if we use a kernel compiled with gcc-12)
-# MAKE[0]="make CC=/usr/bin/gcc-12 -C ${kernel_source_dir} M=${dkms_tree}/${PACKAGE_NAME}/${PACKAGE_VERSION}/build"
-MAKE[0]="make -C ${kernel_source_dir} M=${dkms_tree}/${PACKAGE_NAME}/${PACKAGE_VERSION}/build"
+MAKE[0]="make${CC_PARAMETER} -C \${kernel_source_dir} M=\${dkms_tree}/\${PACKAGE_NAME}/\${PACKAGE_VERSION}/build"
 PRE_BUILD="dkms-patchmodule.sh sound/pci/hda"
 EOF
 
