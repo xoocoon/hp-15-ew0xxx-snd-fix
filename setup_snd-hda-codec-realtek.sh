@@ -2,6 +2,10 @@
 
 # see https://www.collabora.com/news-and-blog/blog/2021/05/05/quick-hack-patching-kernel-module-using-dkms/
 
+if ! which apt >/dev/null; then
+  printf '%s\n\n' 'Warning! This script was created for Debian-based distros. You might want to modify it to suit your Linux distro.'
+fi
+
 sudo apt update -y && sudo apt install linux-headers-$(uname -r) 
 
 # see https://askubuntu.com/questions/1348250/skipping-btf-generation-xxx-due-to-unavailability-of-vmlinux-on-ubuntu-21-04
@@ -90,8 +94,8 @@ EOF
 
 clear
 # build the DKMS module, install it and update the initramfs
-sudo dkms build -m snd-hda-codec-realtek -v 0.1 --force && \
-sudo dkms install -m snd-hda-codec-realtek -v 0.1 --force && \
+sudo dkms build -m snd-hda-codec-realtek -v 0.1 --force
+sudo dkms install -m snd-hda-codec-realtek -v 0.1 --force
 sudo update-initramfs -u -k $(uname -r)
 
 sudo reboot
