@@ -16,7 +16,13 @@ Mainline source code: https://github.com/torvalds/linux/blob/master/sound/pci/hd
 This module is used to activate the smart amplifiers on the I2C bus, but the exact wiring on a hardware level is model-specific. That is why the mentioned HP models and probably many other need a model-specific fix of the kernel module.
 The shell script `setup_snd-hda-scodec-cs35l41.sh` is intended to setup DKMS and the DKMS module for snd-hda-scodec-cs35l41 on your machine. Tested on Ubuntu 23.04. only.
 
-Instead of executing the entire script on your machine you might execute each shell command step by step to see whether it works.
+First, make the script executable, then execute it:
+```
+sudo chown u+x setup_snd-hda-scodec-cs35l41.sh
+./setup_snd-hda-scodec-cs35l41.sh
+```
+
+Instead of executing the entire script you might execute each shell command step by step to see whether it works.
 
 To verify if the module works on your machine, you can query the kernel messages as follows:
 ```
@@ -49,7 +55,13 @@ Mainline source code: https://github.com/torvalds/linux/blob/master/sound/pci/hd
 
 The shell script `snd-hda-codec-realtek.sh` is intended to setup DKMS and the DKMS module for snd-hda-codec-realtek on your machine. Tested on Ubuntu 23.04. only.
 
-Instead of executing the entire script on your machine you might execute each shell command step by step to see whether it works.
+First, make the script executable, then execute it:
+```
+sudo chown u+x snd-hda-codec-realtek.sh
+./snd-hda-codec-realtek.sh
+```
+
+Instead of executing the entire script you might execute each shell command step by step to see whether it works.
 
 To verify if the module works on your machine, you can query the kernel messages as follows:
 ```
@@ -74,6 +86,22 @@ What both `setup_snd-hda-scodec-cs35l41` and `snd-hda-codec-realtek` do is that 
 
 Step 3. is where you can add your own patches to support your laptop model.
 Once the modules are built and installed via DKMS they should supersede the modules of the same name in the mainline kernel. This should also work with Secure Boot as the DKMS build process signs the modules with the MOK key on your system. Of course, as a prerequisite, this MOK key must be registered in the BIOS/UEFI of your machine beforehand.
+
+## Troubleshooting
+### DKMS status
+To check whether the built DKMS modules are loaded after a reboot, execute the following command:
+```
+dkms status
+```
+
+A successful output looks like this:
+```
+snd-hda-codec-realtek/0.1, 6.2.0-20-generic, x86_64: installed
+snd-hda-scodec-cs35l41/0.1, 6.2.0-20-generic, x86_64: installed
+```
+
+### Readelf
+The `dkms` command might yield readelf error messages, but these can be ignored, obviously.
 
 ## Tweaking it for your distro and model
 The main reason why the script only works on Debian-based distros is the usage of the apt package manager. You might want to replace the apt calls with the package manager of your distro and adjust the package names. Pull requests to make the scripts more versatile are highly appreciated!
