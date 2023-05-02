@@ -13,18 +13,18 @@ The snd-hda-scodec-cs35l41 DKMS module included in this repo is intended to supe
 
 Mainline source code: https://github.com/torvalds/linux/blob/master/sound/pci/hda/cs35l41_hda.c
 
-This module is used to activate the smart amplifiers on the I2C bus, but the exact wiring on a hardware level is model-specific. That is why the mentioned HP models and probably many other need a model-specific fix of the kernel module.
+This module is used to activate the smart amplifiers on the I2C bus, but the exact wiring on a hardware level is model-specific. That is why the mentioned HP models and probably many others need a model-specific fix of the kernel module.
 The shell script `setup_snd-hda-scodec-cs35l41.sh` is intended to setup DKMS and the DKMS module for snd-hda-scodec-cs35l41 on your machine. Tested on Ubuntu 23.04. only.
 
 First, make the script executable, then execute it:
 ```
-sudo chown u+x setup_snd-hda-scodec-cs35l41.sh
+sudo chmod u+x setup_snd-hda-scodec-cs35l41.sh
 ./setup_snd-hda-scodec-cs35l41.sh
 ```
 
 Instead of executing the entire script you might execute each shell command step by step to see whether it works.
 
-To verify if the module works on your machine, you can query the kernel messages as follows:
+After a successful build of the module and reboot of your machine, you can verify it with following command:
 ```
 sudo dmesg | grep cs35l41-hda
 ```
@@ -49,21 +49,21 @@ cs35l41-hda i2c-CSC3551:00-cs35l41-hda.1: Cirrus Logic CS35L41 (35a40), Revision
 ## The snd-hda-codec-realtek module
 The snd-hda-codec-realtek DKMS module included in this repo is intended to supersede the mainline kernel module of the same name.
 
-This module provides fixes for several HDA codecs provided by Realtek, e.g. ALC245, ALC269 and ALC287. However, the codec id itself is not enough to enable the speakers on a specific HP Envy x360 15-ew0xxx model. Hence the need to adjust it for each model with a new hardware setup.
-
 Mainline source code: https://github.com/torvalds/linux/blob/master/sound/pci/hda/patch_realtek.c
 
-The shell script `snd-hda-codec-realtek.sh` is intended to setup DKMS and the DKMS module for snd-hda-codec-realtek on your machine. Tested on Ubuntu 23.04. only.
+This module provides fixes for several HDA codecs provided by Realtek, e.g. ALC245, ALC269 and ALC287. However, the codec id itself is not enough to enable the speakers on a specific HP Envy x360 15-ew0xxx model. Hence the need to adjust it for each model with a new hardware setup.
+
+The shell script `setup_snd-hda-codec-realtek.sh` is intended to setup DKMS and the DKMS module for snd-hda-codec-realtek on your machine. Tested on Ubuntu 23.04. only.
 
 First, make the script executable, then execute it:
 ```
 sudo chown u+x snd-hda-codec-realtek.sh
-./snd-hda-codec-realtek.sh
+./setup_snd-hda-codec-realtek.sh
 ```
 
 Instead of executing the entire script you might execute each shell command step by step to see whether it works.
 
-To verify if the module works on your machine, you can query the kernel messages as follows:
+After a successful build of the module and reboot of your machine, you can verify it with following command:
 ```
 sudo dmesg | grep cs35l41-hda
 ```
@@ -78,7 +78,7 @@ cs35l41-hda i2c-CSC3551:00-cs35l41-hda.0: DSP1: 1: ID f20b v0.1.0 XM@17c YM@0
 ```
 
 ## The general approach
-What both `setup_snd-hda-scodec-cs35l41` and `snd-hda-codec-realtek` do is that they generate a configuration for a DKMS module, build it and install it. In the build process, the following happens:
+What both `setup_snd-hda-scodec-cs35l41.sh` and `setup_snd-hda-codec-realtek.sh` do is that they generate a configuration for a DKMS module, build it and install it. In the build process, the following happens:
 1. The entire kernel source code for the currently installed kernel gets downloaded from https://mirrors.edge.kernel.org as a tarball.
 2. Only the module in question is extracted from the tarball. That is, snd-hda-scodec-cs35l41 and snd-hda-codec-realtek, respectively.
 3. A patch is applied to the relevant source code files.
