@@ -55,7 +55,13 @@ vers=(${kernelver//./ })   # split kernel version into individual elements
 major="${vers[0]}"
 minor="${vers[1]}"
 version="$major.$minor"    # recombine as needed
-subver=$(grep "SUBLEVEL =" /usr/src/linux-headers-${kernelver}/Makefile | tr -d " " | cut -d "=" -f 2)
+
+makefile=/usr/src/linux-headers-${kernelver}/Makefile
+if [ $(wc -l < $makefile) -eq 1 ] && grep -q "^include " $makefile ; then
+  makefile=$(tr -s " " < $makefile | cut -d " " -f 2)
+fi
+
+subver=$(grep "SUBLEVEL =" $makefile | tr -d " " | cut -d "=" -f 2)
 
 echo "Downloading kernel source $version.$subver for $kernelver"
 wget https://mirrors.edge.kernel.org/pub/linux/kernel/v$major.x/linux-$version.$subver.tar.xz

@@ -9,6 +9,9 @@ fi
 
 sudo apt update -y && sudo apt install linux-headers-$(uname -r) 
 
-# see https://askubuntu.com/questions/1348250/skipping-btf-generation-xxx-due-to-unavailability-of-vmlinux-on-ubuntu-21-04
 sudo apt install build-essential dkms dwarves
-sudo cp /sys/kernel/btf/vmlinux "/usr/lib/modules/$(uname -r)/build/"
+
+if grep -q "^ID=ubuntu" /etc/os-release; then
+  # see https://askubuntu.com/questions/1348250/skipping-btf-generation-xxx-due-to-unavailability-of-vmlinux-on-ubuntu-21-04
+  sudo cp /sys/kernel/btf/vmlinux "/usr/lib/modules/$(uname -r)/build/"
+fi
