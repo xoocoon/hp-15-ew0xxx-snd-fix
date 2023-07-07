@@ -36,6 +36,4 @@ sudo tee "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}/patch_realtek.pa
  	SND_PCI_QUIRK(0x103c, 0x8b42, "HP", ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED),
 EOF
 
-clear
-
 ./dkms-module_build.sh "${KERNEL_MODULE_NAME}" "${DKMS_MODULE_VERSION}"

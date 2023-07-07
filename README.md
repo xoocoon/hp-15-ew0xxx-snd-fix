@@ -57,7 +57,7 @@ The shell script `setup_snd-hda-codec-realtek.sh` is intended to setup DKMS and 
 
 First, make the script executable, then execute it:
 ```
-sudo chown u+x snd-hda-codec-realtek.sh
+sudo chmod u+x snd-hda-codec-realtek.sh
 ./setup_snd-hda-codec-realtek.sh
 ```
 

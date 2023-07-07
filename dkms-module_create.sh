@@ -41,23 +41,37 @@ EOF
 sudo tee "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}/dkms-patchmodule.sh" <<'EOF'
 #!/bin/bash
 
-# see https://www.collabora.com/news-and-blog/blog/2021/05/05/quick-hack-patching-kernel-module-using-dkms/
+# check prerequisites -----------------------------------------------------------------------------
 
-# kernelver is not set on kernel upgrade from apt, but DPKG_MAINTSCRIPT_PACKAGE
-# contains the kernel image or header package upgraded
+KERNEL_VERSION=$kernelver
 
-if [ -z "$kernelver" ] ; then
-  echo "using DPKG_MAINTSCRIPT_PACKAGE instead of unset kernelver"
-  kernelver=$( echo $DPKG_MAINTSCRIPT_PACKAGE | sed -r 's/linux-(headers|image)-//' )
+if [ -z "$KERNEL_VERSION" ]; then
+  LATEST_LINUX_IMAGE_PACKAGE=$( dpkg -l | grep -oP 'linux-image-\d\S*\b' | sort -r | head -n1 )
+  KERNEL_VERSION=${LATEST_LINUX_IMAGE_PACKAGE#linux-image-}
+
+  echo "Using ${KERNEL_VERSION} of unset \$kernelver"
 fi
 
-vers=(${kernelver//./ })   # split kernel version into individual elements
+
+HEADERS_PACKAGE_NAME="linux-headers-${KERNEL_VERSION}"
+
+if ! dpkg -l | grep -q $HEADERS_PACKAGE_NAME; then
+  sudo apt update -y && sudo apt install $HEADERS_PACKAGE_NAME -y
+  dpkg -l | grep -q $HEADERS_PACKAGE_NAME || \
+     { echo Could not install $HEADERS_PACKAGE_NAME. Try installing it manually.; exit 3; }
+fi
+
+# download kernel source and patch it -------------------------------------------------------------
+
+# see https://www.collabora.com/news-and-blog/blog/2021/05/05/quick-hack-patching-kernel-module-using-dkms/
+
+vers=(${KERNEL_VERSION//./ })   # split kernel version into individual elements
 major="${vers[0]}"
 minor="${vers[1]}"
 version="$major.$minor"    # recombine as needed
-subver=$(grep "SUBLEVEL =" /usr/src/linux-headers-${kernelver}/Makefile | tr -d " " | cut -d "=" -f 2)
+subver=$(grep "SUBLEVEL =" /usr/src/linux-headers-${KERNEL_VERSION}/Makefile | tr -d " " | cut -d "=" -f 2)
 
-echo "Downloading kernel source $version.$subver for $kernelver"
+echo "Downloading kernel source $version.$subver for $KERNEL_VERSION"
 wget https://mirrors.edge.kernel.org/pub/linux/kernel/v$major.x/linux-$version.$subver.tar.xz
 
 echo "Extracting original source of the kernel module"
