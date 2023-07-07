@@ -41,17 +41,18 @@ EOF
 sudo tee "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}/dkms-patchmodule.sh" <<'EOF'
 #!/bin/bash
 
-# check prerequisites -----------------------------------------------------------------------------
+# find out kernel version to use ------------------------------------------------------------------
 
 KERNEL_VERSION=$kernelver
 
-if [ -z "$KERNEL_VERSION" ]; then
+if [ -z "${KERNEL_VERSION}" ]; then
   LATEST_LINUX_IMAGE_PACKAGE=$( dpkg -l | grep -oP 'linux-image-\d\S*\b' | sort -r | head -n1 )
   KERNEL_VERSION=${LATEST_LINUX_IMAGE_PACKAGE#linux-image-}
-
-  echo "Using ${KERNEL_VERSION} of unset \$kernelver"
 fi
 
+echo "Building for kernel version ${KERNEL_VERSION}"
+
+# install linux-headers package if not present ----------------------------------------------------
 
 HEADERS_PACKAGE_NAME="linux-headers-${KERNEL_VERSION}"
 
@@ -60,6 +61,8 @@ if ! dpkg -l | grep -q $HEADERS_PACKAGE_NAME; then
   dpkg -l | grep -q $HEADERS_PACKAGE_NAME || \
      { echo Could not install $HEADERS_PACKAGE_NAME. Try installing it manually.; exit 3; }
 fi
+
+# cp /sys/kernel/btf/vmlinux "/usr/lib/modules/${KERNEL_VERSION}/build/"
 
 # download kernel source and patch it -------------------------------------------------------------
 

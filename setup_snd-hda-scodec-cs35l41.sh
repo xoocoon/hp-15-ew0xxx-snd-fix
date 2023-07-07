@@ -5,14 +5,16 @@
 # make the script stop on error
 set -e
 
+BIN_ABSPATH="$(dirname "$(readlink -f "${0}")")"
+
 KERNEL_MODULE_NAME='snd-hda-scodec-cs35l41'
 DKMS_MODULE_VERSION='0.1'
 
-./dkms-module_prepare.sh
+"${BIN_ABSPATH}/dkms-module_prepare.sh"
 
 # set up the actual DKMS module -------------------------------------------------------------------
 
-./dkms-module_create.sh "${KERNEL_MODULE_NAME}" "${DKMS_MODULE_VERSION}"
+"${BIN_ABSPATH}/dkms-module_create.sh" "${KERNEL_MODULE_NAME}" "${DKMS_MODULE_VERSION}"
 
 # create the patch file to apply to the source of the snd-hda-scodec-cs35l41 kernel module
 sudo tee "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}/cs35l41_hda.patch" <<'EOF'
@@ -31,6 +33,4 @@ sudo tee "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}/cs35l41_hda.patc
  		 * Note: CLSA010(0/1) are special cases which use a slightly different design.
 EOF
 
-clear
-
-./dkms-module_build.sh "${KERNEL_MODULE_NAME}" "${DKMS_MODULE_VERSION}"
+"${BIN_ABSPATH}/dkms-module_build.sh" "${KERNEL_MODULE_NAME}" "${DKMS_MODULE_VERSION}"
