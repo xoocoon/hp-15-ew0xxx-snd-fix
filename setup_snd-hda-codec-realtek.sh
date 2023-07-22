@@ -18,7 +18,7 @@ DKMS_MODULE_VERSION='0.1'
 
 # create the patch file to apply to the source of the snd-hda-codec-realtek kernel module
 sudo tee "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}/patch_realtek.patch" <<'EOF'
---- sound/pci/hda/patch_realtek.c.orig
+--- sound/pci/hda/patch_realtek.c
 +++ sound/pci/hda/patch_realtek.c
 @@ -9452,6 +9452,9 @@
  	SND_PCI_QUIRK(0x103c, 0x89c6, "Zbook Fury 17 G9", ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED),
