@@ -9,7 +9,7 @@ BIN_ABSPATH="$(dirname "$(readlink -f "${0}")")"
 
 IS_AUTO_PATCH=false
 
-if [ $1 = '-a' ] || [ $1 = '--auto' ]; then
+if [ "${1}" = '-a' ] || [ "${1}" = '--auto' ]; then
   IS_AUTO_PATCH=true
 fi
 
@@ -33,7 +33,7 @@ if [ $IS_AUTO_PATCH = true ]; then
 fi
 
 # create the patch file to apply to the source of the snd-hda-codec-realtek kernel module
-sudo tee "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}/patch_realtek.patch" <<EOF
+tee "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}/patch_realtek.patch" <<EOF
 --- sound/pci/hda/patch_realtek.c.orig
 +++ sound/pci/hda/patch_realtek.c
 @@ -9452,6 +9452,10 @@

@@ -2,7 +2,7 @@
 DKMS module for fixing the sound on Linux for HP models Envy x360 15-ew0xxx
 
 ## Purpose
-The HP Envy x360 15-ew0xxx laptop models dating from 2022 seem to be quite compatible with Linux, except the sound from built-in speakers. This repo contains two DKMS modules for fixing this issue on Debian-based Linux distros (from kernel 6.1 onwards) and the exact model 15-ew0776ng.
+The HP Envy x360 15-ew0xxx laptop models dating from 2022 seem to be quite compatible with Linux, except the sound from built-in speakers. This repo contains two DKMS modules for fixing this issue on Debian-based Linux distros and Arch Linux (from kernel 6.1 onwards) and the exact model 15-ew0776ng.
 
 It might also work with other HP models in the x360 15-ew/15-ey range. Hardware prerequisites are the Cirrus Logic smart amplifier chipset CSC3551 and the Realtek HDA codec ALC245. Please leave any comments or commit any code to make it work for other models than 15-ew0776ng.
 

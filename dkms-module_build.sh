@@ -3,23 +3,28 @@
 # make the script stop on error
 set -e
 
+BIN_ABSPATH="$(dirname "$(readlink -f "${0}")")"
+
 KERNEL_MODULE_NAME="${1}"
 DKMS_MODULE_VERSION="${2}"
 
-if [ -z "${KERNEL_VERSION}" ]; then
-  LATEST_LINUX_IMAGE_PACKAGE=$( dpkg -l | grep -oP 'linux-image-\d\S*\b' | sort -r | head -n1 )
-  KERNEL_VERSION=${LATEST_LINUX_IMAGE_PACKAGE#linux-image-}
-fi
+. "${BIN_ABSPATH}/include_get-kernel-version.sh"
 
 echo "Building for kernel version ${KERNEL_VERSION}"
 
 # build and install the DKMS module and update initramfs ------------------------------------------
 
-sudo dkms build -k "${KERNEL_VERSION}" -m "${KERNEL_MODULE_NAME}" -v "${DKMS_MODULE_VERSION}" --force
-sudo dkms install -k "${KERNEL_VERSION}" -m "${KERNEL_MODULE_NAME}" -v "${DKMS_MODULE_VERSION}" --force
+dkms build -k "${KERNEL_VERSION}" -m "${KERNEL_MODULE_NAME}" -v "${DKMS_MODULE_VERSION}" --force
+dkms install -k "${KERNEL_VERSION}" -m "${KERNEL_MODULE_NAME}" -v "${DKMS_MODULE_VERSION}" --force
 
-if sudo dmesg | grep -q 'initramfs'; then
-  sudo update-initramfs -u -k "${KERNEL_VERSION}"
+if dmesg | grep -q 'initramfs'; then
+  if grep -q "^ID_LIKE=debian" /etc/os-release; then
+    update-initramfs -u -k "${KERNEL_VERSION}"
+  elif grep -q "^ID=arch" /etc/os-release; then
+    mkinitcpio -P
+  else
+    echo "Update of initramfs not (yet) supported for your Linux distro. You might want to modify the distro-specific commands."
+  fi
 fi
 
 printf '\n%s\n    %s\n' "Please reboot your system and check whether ${KERNEL_MODULE_NAME} has been loaded via the command" 'dkms status'

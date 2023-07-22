@@ -17,7 +17,7 @@ DKMS_MODULE_VERSION='0.1'
 "${BIN_ABSPATH}/dkms-module_create.sh" "${KERNEL_MODULE_NAME}" "${DKMS_MODULE_VERSION}"
 
 # create the patch file to apply to the source of the snd-hda-scodec-cs35l41 kernel module
-sudo tee "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}/cs35l41_hda.patch" <<'EOF'
+tee "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}/cs35l41_hda.patch" <<'EOF'
 --- sound/pci/hda/cs35l41_hda.c.orig
 +++ sound/pci/hda/cs35l41_hda.c
 @@ -1244,6 +1244,10 @@
