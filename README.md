@@ -2,9 +2,9 @@
 DKMS module for fixing the sound on Linux for HP models Envy x360 15-ew0xxx
 
 ## Purpose
-The HP Envy x360 15-ew0xxx laptop models dating from 2022 seem to be quite compatible with Linux, except the sound from built-in speakers. This repo contains two DKMS modules for fixing this issue on Ubuntu Linux 23.04 (kernel 6.2) and the exact model 15-ew0776ng.
+The HP Envy x360 15-ew0xxx laptop models dating from 2022 seem to be quite compatible with Linux, except the sound from built-in speakers. This repo contains two DKMS modules for fixing this issue on Debian-based Linux distros (from kernel 6.1 onwards) and the exact model 15-ew0776ng.
 
-It might also work on other Debian-based distributions with a kernel from 6.1 onwards, as well as with other HP models in the x360 15-ew/15-ey range. Hardware prerequisites are the Cirrus Logic smart amplifier chipset CSC3551 and the Realtek HDA codec ALC245. Please leave any comments or commit any code to make it work for other models than 15-ew0776ng.
+It might also work with other HP models in the x360 15-ew/15-ey range. Hardware prerequisites are the Cirrus Logic smart amplifier chipset CSC3551 and the Realtek HDA codec ALC245. Please leave any comments or commit any code to make it work for other models than 15-ew0776ng.
 
 **This module comes without any warranty, so installing and testing it on your own hardware is at your own risk.**
 
@@ -14,7 +14,7 @@ The snd-hda-scodec-cs35l41 DKMS module included in this repo is intended to supe
 Mainline source code: https://github.com/torvalds/linux/blob/master/sound/pci/hda/cs35l41_hda.c
 
 This module is used to activate the smart amplifiers on the I2C bus, but the exact wiring on a hardware level is model-specific. That is why the mentioned HP models and probably many others need a model-specific fix of the kernel module.
-The shell script `setup_snd-hda-scodec-cs35l41.sh` is intended to setup DKMS and the DKMS module for snd-hda-scodec-cs35l41 on your machine. Tested on Ubuntu 23.04. only.
+The shell script `setup_snd-hda-scodec-cs35l41.sh` is intended to setup DKMS and the DKMS module for snd-hda-scodec-cs35l41 on your machine. Tested on Ubuntu 23.04.
 
 First, make the script executable, then execute it:
 ```
@@ -53,7 +53,7 @@ Mainline source code: https://github.com/torvalds/linux/blob/master/sound/pci/hd
 
 This module provides fixes for several HDA codecs provided by Realtek, e.g. ALC245, ALC269 and ALC287. However, the codec id itself is not enough to enable the speakers on a specific HP Envy x360 15-ew0xxx model. Hence the need to adjust it for each model with a new hardware setup.
 
-The shell script `setup_snd-hda-codec-realtek.sh` is intended to setup DKMS and the DKMS module for snd-hda-codec-realtek on your machine. Tested on Ubuntu 23.04. only.
+The shell script `setup_snd-hda-codec-realtek.sh` is intended to setup DKMS and the DKMS module for snd-hda-codec-realtek on your machine. Tested on Ubuntu 23.04.
 
 First, make the script executable, then execute it:
 ```
