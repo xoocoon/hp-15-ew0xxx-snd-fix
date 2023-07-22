@@ -6,23 +6,12 @@ KERNEL_VERSION=$kernelver
 
 . kernel-version_get.sh
 
-echo "Building for kernel version ${KERNEL_VERSION}"
-
-# install linux-headers package if not present ----------------------------------------------------
-
-if grep -q "^ID_LIKE=debian" /etc/os-release; then
-  HEADERS_PACKAGE_NAME="linux-headers-${KERNEL_VERSION}"
-
-  if ! dpkg -l | grep -q $HEADERS_PACKAGE_NAME; then
-    apt update -y && apt install $HEADERS_PACKAGE_NAME -y
-    dpkg -l | grep -q $HEADERS_PACKAGE_NAME || \
-       { echo "Could not install ${HEADERS_PACKAGE_NAME}. Try installing it manually."; exit 3; }
-  fi
-elif grep -q "^ID=arch" /etc/os-release; then
-  pacman -S pahole dkms base-devel linux-headers
-else
-  echo "Auto-installing kernel headers not (yet) supported for your Linux distro. You might want to modify the distro-specific commands."
+if [ -z $SOURCE_SUB_VERSION ]; then
+  echo "Determining the kernel subversion not (yet) supported for your Linux distro. You might want to modify the distro-specific commands. Aborting."
+  exit 4
 fi
+
+echo "Building for kernel version ${KERNEL_VERSION}"
 
 # download kernel source and patch it -------------------------------------------------------------
 

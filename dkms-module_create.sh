@@ -10,18 +10,37 @@ BIN_ABSPATH="$(dirname "$(readlink -f "${0}")")"
 KERNEL_MODULE_NAME="${1}"
 DKMS_MODULE_VERSION="${2}"
 
+. kernel-version_get.sh
+
 # check OS prerequisites --------------------------------------------------------------------------
 
 # perform OS-specific preparation steps
 if grep -q "^ID_LIKE=debian" /etc/os-release; then
   apt install build-essential dkms dwarves
 
-  if grep -q "^ID=ubuntu" /etc/os-release; then
+  if grep -q "^ID=ubuntu" /etc/os-release && [ -e "/usr/lib/modules/$(uname -r)/build" ]; then
     # see https://askubuntu.com/questions/1348250/skipping-btf-generation-xxx-due-to-unavailability-of-vmlinux-on-ubuntu-21-04
     cp /sys/kernel/btf/vmlinux "/usr/lib/modules/$(uname -r)/build/"
   fi
 else
   echo "Preparation steps not (yet) supported for your Linux distro. You might want to modify the distro-specific commands."
+fi
+
+# install linux-headers package if not present 
+if grep -q "^ID_LIKE=debian" /etc/os-release; then
+  HEADERS_PACKAGE_NAME="linux-headers-${KERNEL_VERSION}"
+
+  if ! dpkg -l | grep -q $HEADERS_PACKAGE_NAME; then
+    echo "Please consider installing the package linux-headers-generic to auto-install kernel headers with every new kernel."
+    echo "Installing ${HEADERS_PACKAGE_NAME} now."
+    apt update -y && apt install $HEADERS_PACKAGE_NAME -y
+    dpkg -l | grep -q $HEADERS_PACKAGE_NAME || \
+       { echo "Could not install ${HEADERS_PACKAGE_NAME}. Try installing it manually."; exit 3; }
+  fi
+elif grep -q "^ID=arch" /etc/os-release; then
+  pacman -S pahole dkms base-devel linux-headers
+else
+  echo "Auto-installing kernel headers not (yet) supported for your Linux distro. You might want to modify the distro-specific commands."
 fi
 
 # set up the actual DKMS module -------------------------------------------------------------------

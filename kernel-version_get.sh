@@ -19,18 +19,13 @@ SOURCE_MAJOR_VERSION="${KERNEL_VERSION%%.*}"
 SOURCE_MINOR_VERSION="${KERNEL_VERSION#*.}"
 SOURCE_MINOR_VERSION="${SOURCE_MINOR_VERSION%%.*}"
 
-if grep -q "^ID_LIKE=debian" /etc/os-release; then
-  makefile=/usr/src/linux-headers-${KERNEL_VERSION}/Makefile
-  if [ $(wc -l < $makefile) -eq 1 ] && grep -q "^include " $makefile ; then
+if grep -q "^ID_LIKE=debian" /etc/os-release && [ -e "/usr/src/linux-headers-${KERNEL_VERSION}/Makefile" ]; then
+  makefile="/usr/src/linux-headers-${KERNEL_VERSION}/Makefile"
+  if [ "$(wc -l < $makefile)" -eq 1 ] && grep -q "^include " $makefile ; then
     makefile=$(tr -s " " < $makefile | cut -d " " -f 2)
   fi
 
   SOURCE_SUB_VERSION=$(grep "SUBLEVEL =" $makefile | tr -d " " | cut -d "=" -f 2)
 elif grep -q "^ID=arch" /etc/os-release; then
   SOURCE_SUB_VERSION=$(uname -r | cut -d '.' -f 3 | cut -d '-' -f 1)
-fi
-
-if [ -z $SOURCE_SUB_VERSION ]; then
-  echo "Determining the kernel subversion not (yet) supported for your Linux distro. You might want to modify the distro-specific commands. Aborting."
-  exit 4
 fi
