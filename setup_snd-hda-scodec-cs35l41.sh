@@ -18,9 +18,9 @@ DKMS_MODULE_VERSION='0.1'
 
 # create the patch file to apply to the source of the snd-hda-scodec-cs35l41 kernel module
 sudo tee "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}/cs35l41_hda.patch" <<'EOF'
---- sound/pci/hda/cs35l41_hda.c
+--- sound/pci/hda/cs35l41_hda.c.orig
 +++ sound/pci/hda/cs35l41_hda.c
-@@ -1235,6 +1235,10 @@
+@@ -1244,6 +1244,10 @@
  		hw_cfg->bst_type = CS35L41_EXT_BOOST;
  		hw_cfg->gpio1.func = CS35l41_VSPK_SWITCH;
  		hw_cfg->gpio1.valid = true;
