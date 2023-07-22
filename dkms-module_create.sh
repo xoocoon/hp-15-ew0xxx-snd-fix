@@ -10,6 +10,20 @@ BIN_ABSPATH="$(dirname "$(readlink -f "${0}")")"
 KERNEL_MODULE_NAME="${1}"
 DKMS_MODULE_VERSION="${2}"
 
+# check OS prerequisites --------------------------------------------------------------------------
+
+# perform OS-specific preparation steps
+if grep -q "^ID_LIKE=debian" /etc/os-release; then
+  apt install build-essential dkms dwarves
+
+  if grep -q "^ID=ubuntu" /etc/os-release; then
+    # see https://askubuntu.com/questions/1348250/skipping-btf-generation-xxx-due-to-unavailability-of-vmlinux-on-ubuntu-21-04
+    cp /sys/kernel/btf/vmlinux "/usr/lib/modules/$(uname -r)/build/"
+  fi
+else
+  echo "Preparation steps not (yet) supported for your Linux distro. You might want to modify the distro-specific commands."
+fi
+
 # set up the actual DKMS module -------------------------------------------------------------------
 
 [ ! -e "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}" ] && mkdir "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}"
@@ -40,51 +54,8 @@ PRE_BUILD="dkms-patchmodule.sh sound/pci/hda"
 EOF
 
 # create the pre-build script within the DKMS module
-cat << 'EOF' > "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}/dkms-patchmodule.sh"
-#!/bin/bash
-
-# find out kernel version to use ------------------------------------------------------------------
-
-KERNEL_VERSION=$kernelver
-EOF
-
-cat "${BIN_ABSPATH}/include_get-kernel-version.sh" >> "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}/dkms-patchmodule.sh"
-
-cat << 'EOF' >> "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}/dkms-patchmodule.sh"
-echo "Building for kernel version ${KERNEL_VERSION}"
-
-# install linux-headers package if not present ----------------------------------------------------
-
-if grep -q "^ID_LIKE=debian" /etc/os-release; then
-  HEADERS_PACKAGE_NAME="linux-headers-${KERNEL_VERSION}"
-
-  if ! dpkg -l | grep -q $HEADERS_PACKAGE_NAME; then
-    apt update -y && apt install $HEADERS_PACKAGE_NAME -y
-    dpkg -l | grep -q $HEADERS_PACKAGE_NAME || \
-       { echo "Could not install ${HEADERS_PACKAGE_NAME}. Try installing it manually."; exit 3; }
-  fi
-elif grep -q "^ID=arch" /etc/os-release; then
-  pacman -S pahole dkms base-devel linux-headers
-else
-  echo "Auto-installing kernel headers not (yet) supported for your Linux distro. You might want to modify the distro-specific commands."
-fi
-
-# download kernel source and patch it -------------------------------------------------------------
-
-# see https://www.collabora.com/news-and-blog/blog/2021/05/05/quick-hack-patching-kernel-module-using-dkms/
-
-echo "Downloading kernel source ${SOURCE_MAJOR_VERSION}.${SOURCE_MINOR_VERSION}.${SOURCE_SUB_VERSION} for ${KERNEL_VERSION}"
-wget "https://mirrors.edge.kernel.org/pub/linux/kernel/v${SOURCE_MAJOR_VERSION}.x/linux-${SOURCE_MAJOR_VERSION}.${SOURCE_MINOR_VERSION}.${SOURCE_SUB_VERSION}.tar.xz"
-
-echo "Extracting original source of the kernel module"
-tar -xf linux-$SOURCE_MAJOR_VERSION.$SOURCE_MINOR_VERSION.$SOURCE_SUB_VERSION.tar.* linux-$SOURCE_MAJOR_VERSION.$SOURCE_MINOR_VERSION.$SOURCE_SUB_VERSION/$1 --xform=s,linux-$SOURCE_MAJOR_VERSION.$SOURCE_MINOR_VERSION.$SOURCE_SUB_VERSION/$1,.,
-
-for i in `ls *.patch`
-do
-  echo "Applying $i"
-  patch < $i
-done
-EOF
+cp "${BIN_ABSPATH}/kernel-module_patch.sh" "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}/kernel-module_patch.sh"
+cp "${BIN_ABSPATH}/kernel-version_get.sh" "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}/kernel-version_get.sh"
 
 # make the pre-build script executable
 chmod u+x "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}/dkms-patchmodule.sh"

@@ -8,7 +8,7 @@ BIN_ABSPATH="$(dirname "$(readlink -f "${0}")")"
 KERNEL_MODULE_NAME="${1}"
 DKMS_MODULE_VERSION="${2}"
 
-. "${BIN_ABSPATH}/include_get-kernel-version.sh"
+. "${BIN_ABSPATH}/kernel-version_get.sh"
 
 echo "Building for kernel version ${KERNEL_VERSION}"
 

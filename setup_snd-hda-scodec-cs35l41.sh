@@ -10,8 +10,6 @@ BIN_ABSPATH="$(dirname "$(readlink -f "${0}")")"
 KERNEL_MODULE_NAME='snd-hda-scodec-cs35l41'
 DKMS_MODULE_VERSION='0.1'
 
-"${BIN_ABSPATH}/dkms-module_prepare.sh"
-
 # set up the actual DKMS module -------------------------------------------------------------------
 
 "${BIN_ABSPATH}/dkms-module_create.sh" "${KERNEL_MODULE_NAME}" "${DKMS_MODULE_VERSION}"
