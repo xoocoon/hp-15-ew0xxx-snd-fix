@@ -1,8 +1,11 @@
 # hp-15-ew0xxx-snd-fix
-DKMS module for fixing the sound on Linux for HP models Envy x360 15-ew0xxx, HP Dragonfly Folio and HP Envy 16-h0xxx.
+DKMS module for fixing the sound on Linux for HP models:
+- Envy x360 15-ew0xxx
+- HP Dragonfly Folio 
+- HP Envy 16-h0xxx
 
 ## Purpose
-HP laptop models dating from 2022 onwards seem to be quite compatible with Linux, except the sound from built-in speakers. This repo contains two DKMS modules for fixing this issue on Debian-based Linux distros and Arch Linux (from kernel 6.1 onwards) and the models listed above.
+HP laptop models from 2022 onwards seem to be quite compatible with Linux, except the sound from built-in speakers. This repo contains two DKMS modules for fixing this issue on Debian-based Linux distros and Arch Linux (from kernel 6.1 onwards) and the models listed above.
 
 It might also work with other HP models. Hardware prerequisites are the Cirrus Logic smart amplifier chipset CSC3551 and the Realtek HDA codec ALC245. Please leave any comments or commit any code to make it work for additional models.
 
@@ -60,10 +63,10 @@ The shell script `setup_snd-hda-codec-realtek.sh` is intended to setup DKMS and 
 First, make the script executable, then execute it:
 ```
 sudo chmod u+x snd-hda-codec-realtek.sh
-./setup_snd-hda-codec-realtek.sh --auto
+./setup_snd-hda-codec-realtek.sh --auto --quirk ALC287_FIXUP_CS35L41_I2C_2
 ```
 
-The `--auto` or `-a` flag adds an additional line to the patch, applying the `ALC287_FIXUP_CS35L41_I2C_2` quirk to the audio subsystem ID of the current machine. This patch line may or may not work - your own machine might still need a different quirk. If you omit the flag, only the hard-coded fixes for known machines are included in the patch.
+The `--auto` or `-a` flag adds an additional line to the patch, applying the quirk specified by `--quirk` to the audio subsystem ID of the current machine. Use this at your own risk. The auto feature may or may not work – your own machine might need code adjustments not covered by this patch. If you omit the `--auto` flag, only the hard-coded fixes for known HP models (see above) are considered.
 
 Instead of executing the entire script you might execute each shell command step by step to see whether it works.
 

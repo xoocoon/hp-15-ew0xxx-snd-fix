@@ -7,14 +7,43 @@ set -e
 
 BIN_ABSPATH="$(dirname "$(readlink -f "${0}")")"
 
-IS_AUTO_PATCH=false
-
-if [ "${1}" = '-a' ] || [ "${1}" = '--auto' ]; then
-  IS_AUTO_PATCH=true
-fi
-
 KERNEL_MODULE_NAME='snd-hda-codec-realtek'
 DKMS_MODULE_VERSION='0.1'
+
+declare -a QUIRKS=( 'ALC245_FIXUP_CS35L41_SPI_2' 'ALC287_FIXUP_CS35L41_I2C_2' )
+
+IS_AUTO_PATCH=false
+TARGET_QUIRK=
+
+# Evaluate cmd line arguments #####################################################################
+
+POSITIONAL_ARGUMENTS=( )
+while [[ $# -gt 0 ]] ; do
+  argument="$1"
+  case $argument in
+    -a|--auto)
+      IS_AUTO_PATCH=true
+      shift
+      ;;
+    -q|--quirk)
+      TARGET_QUIRK=$2
+      shift 2
+      ;;
+    --)
+      break
+      ;;
+    *)
+      POSITIONAL_ARGUMENTS+=("$1")
+      shift
+      ;;
+  esac
+done
+set -- "${POSITIONAL_ARGUMENTS[@]}"
+
+if [ $IS_AUTO_PATCH = true ] && [ -z $TARGET_QUIRK ] || [ ! $TARGET_QUIRK =~ ^$QUIRKS$ ]; then
+  printf "%s\n$( for i in $( seq 1 ${#QUIRKS[@]} ); do echo -n '    %s\n'; done )%s\n" 'Please specify one of' ${QUIRKS[*]} "as Realtek quirk to apply to your machine (at your own risk), e.g. -q ${QUIRKS[0]}"
+  exit 1
+fi
 
 # set up the actual DKMS module -------------------------------------------------------------------
 
@@ -26,7 +55,7 @@ if [ $IS_AUTO_PATCH = true ]; then
       read ID < /sys/class/sound/hwC0D0/subsystem_id &&
       ID1=$(printf "0x%04x" $(( ID >> 16 & 0xffff ))) &&
       ID2=$(printf "0x%04x" $(( ID & 0xffff ))); then
-    AUTO_PATCH_LINE="SND_PCI_QUIRK($ID1, $ID2, "'"'"$PRODUCT"'"'", ALC287_FIXUP_CS35L41_I2C_2),"
+    AUTO_PATCH_LINE="SND_PCI_QUIRK($ID1, $ID2, "'"'"$PRODUCT"'"'", $TARGET_QUIRK),"
   fi
 fi
 
