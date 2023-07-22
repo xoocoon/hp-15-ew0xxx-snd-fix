@@ -45,7 +45,7 @@ while [[ $# -gt 0 ]] ; do
 done
 set -- "${POSITIONAL_ARGUMENTS[@]}"
 
-if [ $IS_AUTO_PATCH = true ] && [ -z $TARGET_QUIRK ] || [ ! $TARGET_QUIRK =~ ^$QUIRKS$ ]; then
+if [ $IS_AUTO_PATCH = true ] && { [ -z $TARGET_QUIRK ] || [ ! $TARGET_QUIRK =~ ^$QUIRKS$ ]; }; then
   printf "%s\n$( for i in $( seq 1 ${#QUIRKS[@]} ); do echo -n '    %s\n'; done )%s\n" 'Please specify one of' ${QUIRKS[*]} "as Realtek quirk to apply to your machine (at your own risk), e.g. -q ${QUIRKS[0]}"
   exit 1
 fi
