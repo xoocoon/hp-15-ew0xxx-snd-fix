@@ -15,6 +15,11 @@ declare -a QUIRKS=( 'ALC245_FIXUP_CS35L41_SPI_2' 'ALC287_FIXUP_CS35L41_I2C_2' )
 IS_AUTO_PATCH=false
 TARGET_QUIRK=
 
+if [[ ! $EUID = 0 ]]; then
+  echo "Only root can perform this setup. Aborting."
+  exit 1
+fi
+
 # Evaluate cmd line arguments #####################################################################
 
 POSITIONAL_ARGUMENTS=( )

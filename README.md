@@ -24,7 +24,7 @@ The shell script `setup_snd-hda-scodec-cs35l41.sh` is intended to setup DKMS and
 First, make the script executable, then execute it:
 ```
 sudo chmod u+x setup_snd-hda-scodec-cs35l41.sh
-./setup_snd-hda-scodec-cs35l41.sh
+sudo ./setup_snd-hda-scodec-cs35l41.sh
 ```
 
 Instead of executing the entire script you might execute each shell command step by step to see whether it works.
@@ -63,7 +63,7 @@ The shell script `setup_snd-hda-codec-realtek.sh` is intended to setup DKMS and 
 First, make the script executable, then execute it:
 ```
 sudo chmod u+x snd-hda-codec-realtek.sh
-./setup_snd-hda-codec-realtek.sh --auto --quirk ALC287_FIXUP_CS35L41_I2C_2
+sudo ./setup_snd-hda-codec-realtek.sh --auto --quirk ALC287_FIXUP_CS35L41_I2C_2
 ```
 
 The `--auto` or `-a` flag adds an additional line to the patch, applying the quirk specified by `--quirk` to the audio subsystem ID of the current machine. Use this at your own risk. The auto feature may or may not work – your own machine might need code adjustments not covered by this patch. If you omit the `--auto` flag, only the hard-coded fixes for known HP models (see above) are considered.
@@ -111,7 +111,7 @@ snd-hda-scodec-cs35l41/0.1, 6.2.0-20-generic, x86_64: installed
 The `dkms` command might yield readelf error messages, but these can be ignored, obviously.
 
 ## Tweaking it for your distro and model
-The main reason why the script only works on Debian-based distros is the usage of the apt package manager. You might want to replace the apt calls with the package manager of your distro and adjust the package names. Pull requests to make the scripts more versatile are highly appreciated!
+The main reason why the script only works on Debian-based Linux distros and Arch Linux is the usage of the OS-specific package managers. You might want to replace the apt calls with the package manager of your distro and adjust the package names. Pull requests to make the scripts more versatile are highly appreciated!
 
 Furthermore, to provide a patch for your model, you need its audio subsystem ID, i.e. 0x103c for the manufacturer HP and another 4 hex digits for the actual subsystem. The latter is 0x8a29 in my case. You can find it out with the following command:
 ```
