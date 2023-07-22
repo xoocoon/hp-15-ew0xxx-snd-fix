@@ -58,8 +58,10 @@ The shell script `setup_snd-hda-codec-realtek.sh` is intended to setup DKMS and 
 First, make the script executable, then execute it:
 ```
 sudo chmod u+x snd-hda-codec-realtek.sh
-./setup_snd-hda-codec-realtek.sh
+./setup_snd-hda-codec-realtek.sh --auto
 ```
+
+The `--auto` or `-a` flag adds an additional line to the patch, applying the `ALC287_FIXUP_CS35L41_I2C_2` quirk to the audio subsystem ID of the current machine. This patch line may or may not work - your own machine might still need a different quirk. If you omit the flag, only the hard-coded fixes for known machines are included in the patch.
 
 Instead of executing the entire script you might execute each shell command step by step to see whether it works.
 
