@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ -z "${KERNEL_VERSION}" ]; then
   if grep -q "^ID_LIKE=debian" /etc/os-release; then

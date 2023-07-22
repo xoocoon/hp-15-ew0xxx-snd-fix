@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # make the script stop on error
 set -e

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # see https://www.collabora.com/news-and-blog/blog/2021/05/05/quick-hack-patching-kernel-module-using-dkms/
 
