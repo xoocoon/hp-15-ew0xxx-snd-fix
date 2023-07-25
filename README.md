@@ -1,5 +1,5 @@
 # hp-15-ew0xxx-snd-fix
-DKMS module for fixing the sound on Linux for HP models:
+DKMS modules for fixing the sound on Linux for HP models:
 - Envy x360 15-ew0xxx
 - HP Dragonfly Folio 
 - HP Envy 16-h0xxx
@@ -11,7 +11,7 @@ It might also work with other HP models. Hardware prerequisites are the Cirrus L
 
 The `--auto` flag was added recently, which automatically inserts the audio subsystem ID of the current machine. See below for more info.
 
-**This module comes without any warranty, so installing and testing it on your own hardware is at your own risk. This is especially true for the snd-hda-scodec-cs35l41 module as it initializes the Cirrus Logic amplifiers based on some assumptions for lack of proper BIOS/UEFI APCI entries on the HP laptops in question.**
+**These modules come without any warranty, so installing and testing them on your own hardware is at your own risk. This is especially true for the snd-hda-scodec-cs35l41 module as it initializes the Cirrus Logic amplifiers based on some assumptions for lack of proper BIOS/UEFI APCI entries on the HP laptops in question.**
 
 ## The snd-hda-scodec-cs35l41 module
 The snd-hda-scodec-cs35l41 DKMS module included in this repo is intended to supersede the mainline kernel module of the same name.
