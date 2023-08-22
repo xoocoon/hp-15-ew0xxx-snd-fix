@@ -39,6 +39,8 @@ if grep -q "^ID_LIKE=debian" /etc/os-release; then
   fi
 elif grep -q "^ID=arch" /etc/os-release; then
   pacman -S pahole dkms base-devel linux-headers
+elif grep -q "^ID=fedora" /etc/os-release; then
+  dnf install dwarves dkms kernel-devel kernel-headers  
 else
   echo "Auto-installing kernel headers not (yet) supported for your Linux distro. You might want to modify the distro-specific commands."
 fi
@@ -69,7 +71,7 @@ DEST_MODULE_LOCATION[0]="/updates/dkms"
 
 AUTOINSTALL="yes"
 MAKE[0]="make${CC_PARAMETER} -C \${kernel_source_dir} M=\${dkms_tree}/\${PACKAGE_NAME}/\${PACKAGE_VERSION}/build"
-PRE_BUILD="dkms-patchmodule.sh sound/pci/hda"
+PRE_BUILD="kernel-module_patch.sh sound/pci/hda"
 EOF
 
 # create the pre-build script within the DKMS module
@@ -77,4 +79,4 @@ cp "${BIN_ABSPATH}/kernel-module_patch.sh" "/usr/src/${KERNEL_MODULE_NAME}-${DKM
 cp "${BIN_ABSPATH}/kernel-version_get.sh" "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}/kernel-version_get.sh"
 
 # make the pre-build script executable
-chmod u+x "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}/dkms-patchmodule.sh"
+chmod u+x "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}/kernel-module_patch.sh"
