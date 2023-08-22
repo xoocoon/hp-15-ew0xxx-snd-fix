@@ -62,7 +62,7 @@ The shell script `setup_snd-hda-codec-realtek.sh` is intended to setup DKMS and 
 
 First, make the script executable, then execute it:
 ```
-sudo chmod u+x snd-hda-codec-realtek.sh
+sudo chmod u+x setup_snd-hda-codec-realtek.sh
 sudo ./setup_snd-hda-codec-realtek.sh --auto --quirk ALC287_FIXUP_CS35L41_I2C_2
 ```
 
