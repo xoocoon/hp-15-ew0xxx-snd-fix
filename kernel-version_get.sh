@@ -4,6 +4,8 @@ if [ -z "${KERNEL_VERSION}" ]; then
   if grep -q "^ID_LIKE=debian" /etc/os-release; then
     LATEST_LINUX_IMAGE_PACKAGE=$( dpkg -l | grep -oP 'linux-image-\d\S*\b' | sort -r | head -n1 )
     KERNEL_VERSION=${LATEST_LINUX_IMAGE_PACKAGE#linux-image-}
+  elif grep -q "^ID=fedora" /etc/os-release; then
+    KERNEL_VERSION=$(uname -r)
   else
     KERNEL_VERSION=$(uname -r | cut -d '-' -f 1)
   fi
@@ -27,5 +29,8 @@ if grep -q "^ID_LIKE=debian" /etc/os-release && [ -e "/usr/src/linux-headers-${K
 
   SOURCE_SUB_VERSION=$(grep "SUBLEVEL =" $makefile | tr -d " " | cut -d "=" -f 2)
 elif grep -q "^ID=arch" /etc/os-release; then
+  SOURCE_SUB_VERSION=$(uname -r | cut -d '.' -f 3 | cut -d '-' -f 1)
+elif grep -q "^ID=fedora" /etc/os-release; then
+  makefile="/usr/src/kernels/${KERNEL_VERSION}/Makefile"
   SOURCE_SUB_VERSION=$(uname -r | cut -d '.' -f 3 | cut -d '-' -f 1)
 fi

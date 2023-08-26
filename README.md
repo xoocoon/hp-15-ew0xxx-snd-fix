@@ -5,7 +5,7 @@ DKMS modules for fixing the sound on Linux for HP models:
 - HP Envy 16-h0xxx
 
 ## Purpose
-HP laptop models from 2022 onwards seem to be quite compatible with Linux, except the sound from built-in speakers. This repo contains two DKMS modules for fixing this issue on Debian-based Linux distros and Arch Linux (from kernel 6.1 onwards) and the models listed above.
+HP laptop models from 2022 onwards seem to be quite compatible with Linux, except the sound from built-in speakers. This repo contains two DKMS modules for fixing this issue on Debian-based Linux distros, Fedora and Arch Linux (from kernel 6.1 onwards) and the models listed above.
 
 It might also work with other HP models. Hardware prerequisites are the Cirrus Logic smart amplifier chipset CSC3551 and the Realtek HDA codec ALC245. Please leave any comments or commit any code to make it work for additional models.
 
@@ -62,7 +62,7 @@ The shell script `setup_snd-hda-codec-realtek.sh` is intended to setup DKMS and 
 
 First, make the script executable, then execute it:
 ```
-sudo chmod u+x snd-hda-codec-realtek.sh
+sudo chmod u+x setup_snd-hda-codec-realtek.sh
 sudo ./setup_snd-hda-codec-realtek.sh --auto --quirk ALC287_FIXUP_CS35L41_I2C_2
 ```
 
@@ -111,7 +111,7 @@ snd-hda-scodec-cs35l41/0.1, 6.2.0-20-generic, x86_64: installed
 The `dkms` command might yield readelf error messages, but these can be ignored, obviously.
 
 ## Tweaking it for your distro and model
-The main reason why the script only works on Debian-based Linux distros and Arch Linux is the usage of the OS-specific package managers. You might want to replace the apt calls with the package manager of your distro and adjust the package names. Pull requests to make the scripts more versatile are highly appreciated!
+The main reason why the script only works on Debian-based Linux distros, Fedora Linux and Arch Linux is the usage of the OS-specific package managers. You might want to replace the apt calls with the package manager of your distro and adjust the package names. Pull requests to make the scripts more versatile are highly appreciated!
 
 Furthermore, to provide a patch for your model, you need its audio subsystem ID, i.e. 0x103c for the manufacturer HP and another 4 hex digits for the actual subsystem. The latter is 0x8a29 in my case. You can find it out with the following command:
 ```
