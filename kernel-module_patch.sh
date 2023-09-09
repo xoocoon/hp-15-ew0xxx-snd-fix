@@ -26,8 +26,7 @@ wget "https://mirrors.edge.kernel.org/pub/linux/kernel/v${SOURCE_MAJOR_VERSION}.
 echo "Extracting original source of the kernel module"
 tar -xf "linux-${SOURCE_VERSION_STRING}.tar."* "linux-${SOURCE_VERSION_STRING}/${1}" "--xform=s,linux-${SOURCE_VERSION_STRING}/$1,.,"
 
-for i in `ls *.patch`
-do
+for i in `ls *.patch`; do
   echo "Applying $i"
   patch < $i
 done

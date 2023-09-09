@@ -1,8 +1,11 @@
 # hp-15-ew0xxx-snd-fix
 DKMS modules for fixing the sound on Linux for HP models:
-- Envy x360 15-ew0xxx
-- HP Dragonfly Folio 
+- HP Dragonfly Folio 13.5 inch
+- HP Envy x360 2-in-1 Laptop 15-ew0xxx
+- HP Envy x360 2-in-1 Laptop 15-fe0xxx
 - HP Envy 16-h0xxx
+- HP ENVY Laptop 16-h1xxx
+- HP Envy Laptop 17t-cr0xxx
 
 ## Purpose
 HP laptop models from 2022 onwards seem to be quite compatible with Linux, except the sound from built-in speakers. This repo contains two DKMS modules for fixing this issue on Debian-based Linux distros, Fedora and Arch Linux (from kernel 6.1 onwards) and the models listed above.
@@ -106,6 +109,10 @@ A successful output looks like this:
 snd-hda-codec-realtek/0.1, 6.2.0-20-generic, x86_64: installed
 snd-hda-scodec-cs35l41/0.1, 6.2.0-20-generic, x86_64: installed
 ```
+
+### Compiler errors
+
+On Ubuntu 23.04, with the update to kernel 6.2.0-32-generic the compilations of the DKMS modules fails with an "incompatible pointer" error. Reverting to kernel 6.2.0-31-generic fixes the issue.
 
 ### Readelf
 The `dkms` command might yield readelf error messages, but these can be ignored, obviously.
