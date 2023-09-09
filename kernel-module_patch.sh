@@ -17,11 +17,14 @@ echo "Building for kernel version ${KERNEL_VERSION}"
 
 # see https://www.collabora.com/news-and-blog/blog/2021/05/05/quick-hack-patching-kernel-module-using-dkms/
 
-echo "Downloading kernel source ${SOURCE_MAJOR_VERSION}.${SOURCE_MINOR_VERSION}.${SOURCE_SUB_VERSION} for ${KERNEL_VERSION}"
-wget "https://mirrors.edge.kernel.org/pub/linux/kernel/v${SOURCE_MAJOR_VERSION}.x/linux-${SOURCE_MAJOR_VERSION}.${SOURCE_MINOR_VERSION}.${SOURCE_SUB_VERSION}.tar.xz"
+[ "${SOURCE_SUB_VERSION}" = '0' ] && unset SOURCE_SUB_VERSION
+SOURCE_VERSION_STRING="${SOURCE_MAJOR_VERSION}.${SOURCE_MINOR_VERSION}$( [ -n "${SOURCE_SUB_VERSION}" ] && echo ".${SOURCE_SUB_VERSION}" )"
+
+echo "Downloading source ${SOURCE_VERSION_STRING} for installed kernel ${KERNEL_VERSION}"
+wget "https://mirrors.edge.kernel.org/pub/linux/kernel/v${SOURCE_MAJOR_VERSION}.x/linux-${SOURCE_VERSION_STRING}.tar.xz"
 
 echo "Extracting original source of the kernel module"
-tar -xf linux-$SOURCE_MAJOR_VERSION.$SOURCE_MINOR_VERSION.$SOURCE_SUB_VERSION.tar.* linux-$SOURCE_MAJOR_VERSION.$SOURCE_MINOR_VERSION.$SOURCE_SUB_VERSION/$1 --xform=s,linux-$SOURCE_MAJOR_VERSION.$SOURCE_MINOR_VERSION.$SOURCE_SUB_VERSION/$1,.,
+tar -xf "linux-${SOURCE_VERSION_STRING}.tar."* "linux-${SOURCE_VERSION_STRING}/${1}" "--xform=s,linux-${SOURCE_VERSION_STRING}/$1,.,"
 
 for i in `ls *.patch`
 do

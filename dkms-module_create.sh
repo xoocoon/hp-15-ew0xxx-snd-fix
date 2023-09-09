@@ -61,6 +61,10 @@ if [ $GCC_VERSION_DEFAULT -lt 12 ]; then
   fi
 fi
 
+# Note: On Ubuntu, alternative gcc-12 compilers can be installed with update-alternatives (after installing dkms), e.g.
+# sudo apt install gcc-12-aarch64-linux-gnu
+# sudo update-alternatives --install /usr/bin/gcc-12 gcc-12 /usr/bin/aarch64-linux-gnu-gcc-12 1
+
 # create the configuration file for the DKMS module
 cat << EOF > "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}/dkms.conf"
 PACKAGE_NAME="${KERNEL_MODULE_NAME}"

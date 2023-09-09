@@ -20,8 +20,10 @@ fi
 SOURCE_MAJOR_VERSION="${KERNEL_VERSION%%.*}"
 SOURCE_MINOR_VERSION="${KERNEL_VERSION#*.}"
 SOURCE_MINOR_VERSION="${SOURCE_MINOR_VERSION%%.*}"
+SOURCE_SUB_VERSION="${KERNEL_VERSION##*.}"
+SOURCE_SUB_VERSION="${SOURCE_SUB_VERSION%%-*}"
 
-if grep -q "^ID_LIKE=debian" /etc/os-release && [ -e "/usr/src/linux-headers-${KERNEL_VERSION}/Makefile" ]; then
+if grep -q "^ID_LIKE=debian" /etc/os-release && [ -z "${SOURCE_SUB_VERSION}" ] && [ -e "/usr/src/linux-headers-${KERNEL_VERSION}/Makefile" ]; then
   makefile="/usr/src/linux-headers-${KERNEL_VERSION}/Makefile"
   if [ "$(wc -l < $makefile)" -eq 1 ] && grep -q "^include " $makefile ; then
     makefile=$(tr -s " " < $makefile | cut -d " " -f 2)
