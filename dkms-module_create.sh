@@ -15,7 +15,7 @@ DKMS_MODULE_VERSION="${2}"
 # check OS prerequisites --------------------------------------------------------------------------
 
 # perform OS-specific preparation steps
-if grep -q "^ID_LIKE=debian" /etc/os-release; then
+if grep -qE "^ID(_LIKE)?=debian" /etc/os-release; then
   apt install build-essential dkms dwarves
 
   if grep -q "^ID=ubuntu" /etc/os-release && [ -e "/usr/lib/modules/$(uname -r)/build" ]; then
@@ -27,7 +27,7 @@ else
 fi
 
 # install linux-headers package if not present 
-if grep -q "^ID_LIKE=debian" /etc/os-release; then
+if grep -qE "^ID(_LIKE)?=debian" /etc/os-release; then
   HEADERS_PACKAGE_NAME="linux-headers-${KERNEL_VERSION}"
 
   if ! dpkg -l | grep -q $HEADERS_PACKAGE_NAME; then
