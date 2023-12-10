@@ -18,7 +18,7 @@ dkms build -k "${KERNEL_VERSION}" -m "${KERNEL_MODULE_NAME}" -v "${DKMS_MODULE_V
 dkms install -k "${KERNEL_VERSION}" -m "${KERNEL_MODULE_NAME}" -v "${DKMS_MODULE_VERSION}" --force
 
 if dmesg | grep -q 'initramfs'; then
-  if grep -q "^ID_LIKE=debian" /etc/os-release; then
+  if grep -qE "^ID(_LIKE)?=debian" /etc/os-release; then
     update-initramfs -u -k "${KERNEL_VERSION}"
   elif grep -q "^ID=arch" /etc/os-release; then
     mkinitcpio -P
