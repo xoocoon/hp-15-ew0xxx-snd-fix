@@ -36,3 +36,6 @@ elif grep -q "^ID=fedora" /etc/os-release; then
   makefile="/usr/src/kernels/${KERNEL_VERSION}/Makefile"
   SOURCE_SUB_VERSION=$(uname -r | cut -d '.' -f 3 | cut -d '-' -f 1)
 fi
+
+echo "Detected kernel version ${KERNEL_VERSION}."
+echo "Corresponding kernel source version is ${SOURCE_MAJOR_VERSION}.${SOURCE_MINOR_VERSION}.${SOURCE_SUB_VERSION}."

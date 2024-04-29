@@ -19,6 +19,8 @@ The `--auto` flag was added recently, which automatically inserts the audio subs
 ## The snd-hda-scodec-cs35l41 module
 The snd-hda-scodec-cs35l41 DKMS module included in this repo is intended to supersede the mainline kernel module of the same name.
 
+**This patch is only required for kernels prior to 6.8.x.**
+
 Mainline source code: https://github.com/torvalds/linux/blob/master/sound/pci/hda/cs35l41_hda.c
 
 This module is used to activate the smart amplifiers on the I2C bus, but the exact wiring on a hardware level is model-specific. That is why the mentioned HP models and probably many others need a model-specific fix of the kernel module.

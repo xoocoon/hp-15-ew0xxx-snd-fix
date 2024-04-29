@@ -10,6 +10,18 @@ BIN_ABSPATH="$(dirname "$(readlink -f "${0}")")"
 KERNEL_MODULE_NAME='snd-hda-scodec-cs35l41'
 DKMS_MODULE_VERSION='0.1'
 
+. kernel-version_get.sh
+
+if [ $SOURCE_MAJOR_VERSION = 6 ] && [ $SOURCE_MINOR_VERSION = 8 ]; then
+  echo "Patch ${KERNEL_MODULE_NAME} not required for your kernel version."
+  exit 0
+fi
+
+if [ ! $SOURCE_MAJOR_VERSION = 6 ]; then
+  echo "Patch is only applicable to kernel versions 6.x"
+  exit 1
+fi
+
 if [[ ! $EUID = 0 ]]; then
   echo "Only root can perform this setup. Aborting."
   exit 1

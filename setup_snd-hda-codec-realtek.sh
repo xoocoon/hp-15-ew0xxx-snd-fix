@@ -15,6 +15,13 @@ declare -a QUIRKS=( 'ALC245_FIXUP_CS35L41_SPI_2' 'ALC287_FIXUP_CS35L41_I2C_2' )
 IS_AUTO_PATCH=false
 TARGET_QUIRK=
 
+. kernel-version_get.sh
+
+if [ ! $SOURCE_MAJOR_VERSION = 6 ]; then
+  echo "Patch ${KERNEL_MODULE_NAME} only applicable to kernel versions 6.x"
+  exit 1
+fi
+
 if [[ ! $EUID = 0 ]]; then
   echo "Only root can perform this setup. Aborting."
   exit 1
@@ -65,7 +72,26 @@ if [ $IS_AUTO_PATCH = true ]; then
 fi
 
 # create the patch file to apply to the source of the snd-hda-codec-realtek kernel module
-tee "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}/patch_realtek.patch" <<EOF
+if [ $SOURCE_MINOR_VERSION = 8 ]; then
+  tee "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}/patch_realtek.patch" <<EOF
+--- sound/pci/hda/patch_realtek.c.orig
++++ sound/pci/hda/patch_realtek.c
+@@ -9947,6 +9947,12 @@
+ 	SND_PCI_QUIRK(0x103c, 0x89c6, "Zbook Fury 17 G9", ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x89ca, "HP", ALC236_FIXUP_HP_MUTE_LED_MICMUTE_VREF),
+ 	SND_PCI_QUIRK(0x103c, 0x89d3, "HP EliteBook 645 G9 (MB 89D2)", ALC236_FIXUP_HP_MUTE_LED_MICMUTE_VREF),
++  SND_PCI_QUIRK(0x103c, 0x8a06, "HP Dragonfly Folio 13.5 inch G3 2-in-1 Notebook PC", ALC245_FIXUP_CS35L41_SPI_2),
++  SND_PCI_QUIRK(0x103c, 0x8a29, "HP Envy x360 15-ew0xxx", ALC287_FIXUP_CS35L41_I2C_2),
++  SND_PCI_QUIRK(0x103c, 0x8a2c, "HP Envy 16-h0xxx", ALC287_FIXUP_CS35L41_I2C_2),
++  SND_PCI_QUIRK(0x103c, 0x8a2e, "HP Envy Laptop 17t-cr0xxx", ALC287_FIXUP_CS35L41_I2C_2),
++  SND_PCI_QUIRK(0x103c, 0x8bdf, "HP Envy x360 2-in-1 Laptop 15-fe0xxx", ALC287_FIXUP_CS35L41_I2C_2),
++  SND_PCI_QUIRK(0x103c, 0x8be5, "HP ENVY Laptop 16-h1xxx", ALC287_FIXUP_CS35L41_I2C_2),
+ 	SND_PCI_QUIRK(0x103c, 0x8a0f, "HP Pavilion 14-ec1xxx", ALC287_FIXUP_HP_GPIO_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x8a20, "HP Laptop 15s-fq5xxx", ALC236_FIXUP_HP_MUTE_LED_COEFBIT2),
+ 	SND_PCI_QUIRK(0x103c, 0x8a25, "HP Victus 16-d1xxx (MB 8A25)", ALC245_FIXUP_HP_MUTE_LED_COEFBIT),
+EOF
+else
+  tee "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}/patch_realtek.patch" <<EOF
 --- sound/pci/hda/patch_realtek.c.orig
 +++ sound/pci/hda/patch_realtek.c
 @@ -9452,6 +9452,13 @@
@@ -83,5 +109,6 @@ tee "/usr/src/${KERNEL_MODULE_NAME}-${DKMS_MODULE_VERSION}/patch_realtek.patch" 
  	SND_PCI_QUIRK(0x103c, 0x8aa0, "HP ProBook 440 G9 (MB 8A9E)", ALC236_FIXUP_HP_GPIO_LED),
  	SND_PCI_QUIRK(0x103c, 0x8aa3, "HP ProBook 450 G9 (MB 8AA1)", ALC236_FIXUP_HP_GPIO_LED),
 EOF
+fi
 
 "${BIN_ABSPATH}/dkms-module_build.sh" "${KERNEL_MODULE_NAME}" "${DKMS_MODULE_VERSION}"
